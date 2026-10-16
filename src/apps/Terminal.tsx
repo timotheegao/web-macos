@@ -3,7 +3,7 @@ const FS: Record<string, string[]> = { '~': ['Desktop', 'Documents', 'Downloads'
 export default function Terminal() {
   const [lines, setLines] = useState<string[]>(['Last login: ' + new Date().toString().slice(0, 24) + ' on ttys000', 'Type "help" for commands.'])
   const [v, setV] = useState(''); const end = useRef<HTMLDivElement>(null)
-  useEffect(() => end.current?.scrollIntoView(), [lines])
+  useEffect(() => { end.current?.scrollIntoView() }, [lines])
   const run = (c: string): string[] => {
     const [cmd, ...a] = c.trim().split(/\s+/)
     switch (cmd) {

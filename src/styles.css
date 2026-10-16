@@ -27,7 +27,7 @@ html,body,#root{margin:0;height:100%;overflow:hidden;font-family:var(--font);fon
 .dk:hover .tip{opacity:1}
 .bounce>div{animation:bounce .5s ease-in-out 3}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
-.win{position:absolute;border-radius:14px;background:var(--win);box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 .5px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;transition:transform .45s cubic-bezier(.5,0,.2,1),opacity .35s,left .2s,top .2s,width .2s,height .2s;transform-origin:center;animation:pop .22s ease-out;backdrop-filter:blur(30px)}
+.win{position:absolute;border-radius:14px;background:var(--win);box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 .5px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;transition:transform .45s cubic-bezier(.5,0,.2,1),opacity .35s;transform-origin:center;animation:pop .22s ease-out;backdrop-filter:blur(30px)}
 .win.focus{box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 .5px rgba(0,0,0,.35)}
 .win.closing{opacity:0;transform:scale(.92)}.win.max{border-radius:0}
 @keyframes pop{from{opacity:0;transform:scale(.9)}}

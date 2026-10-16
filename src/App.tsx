@@ -42,7 +42,7 @@ export default function App() {
   const z = useRef(10)
 
   useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('theme', theme) }, [theme])
-  useEffect(() => localStorage.setItem('wp', wallpaper), [wallpaper])
+  useEffect(() => { localStorage.setItem('wp', wallpaper) }, [wallpaper])
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t) }, [])
 
   const notify = useCallback((title: string, body: string) => {
