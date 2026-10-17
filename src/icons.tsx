@@ -61,9 +61,9 @@ export const Icon = ({ app }: { app: AppId }) => {
       <rect width="100" height="100" fill={`url(#${id}L)`} />
       <path d="M53 0H100V100H47C55 80 56 62 52 46C50 34 51 14 53 0Z" fill={`url(#${id}R)`} />
       <path d="M53 0C51 14 50 34 52 46C56 62 55 80 47 100" fill="none" stroke="#fff" strokeOpacity=".55" strokeWidth="1.3" />
-      <g fill="#0b1c3a"><ellipse cx="34" cy="38" rx="3.2" ry="6.8" /><ellipse cx="66" cy="38" rx="3.2" ry="6.8" /></g>
+      <g fill="#0b1c3a"><ellipse cx="33" cy="37" rx="3.6" ry="7.6" /><ellipse cx="67" cy="37" rx="3.6" ry="7.6" /></g>
       <path d="M52 40C51 50 52 56 56 60" stroke="#0b1c3a" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      <path d="M24 62C38 82 64 82 77 62" stroke="#0b1c3a" strokeWidth="3.6" fill="none" strokeLinecap="round" /></Sq>
+      <path d="M22 61C37 84 65 84 79 61" stroke="#0b1c3a" strokeWidth="3.6" fill="none" strokeLinecap="round" /></Sq>
     case 'safari': return <Sq c1="#7ee2ff" c2="#1673ea" dark={.12}>
       <defs><radialGradient id={id + 'r'} cx=".5" cy=".35" r=".75"><stop offset="0" stopColor="#4cc3ff" /><stop offset="1" stopColor="#0a63e0" /></radialGradient></defs>
       <circle cx="50" cy="50" r="37" fill="#fff" fillOpacity=".95" /><circle cx="50" cy="50" r="35" fill={`url(#${id}r)`} />
@@ -72,7 +72,7 @@ export const Icon = ({ app }: { app: AppId }) => {
         <path d="M50 22L50 50H42.5Z" fill="#000" opacity=".12" /><path d="M50 78L50 50H57.5Z" fill="#000" opacity=".1" /></g>
       <circle cx="50" cy="50" r="2.6" fill="#fff" stroke="#0a63e0" strokeOpacity=".4" strokeWidth=".6" /></Sq>
     case 'notes': return <Sq c1="#fffef6" c2="#f6f1d9" dark={.06}>
-      <rect width="100" height="27" fill="#ffd62e" /><rect width="100" height="27" fill="#fff" opacity=".18" />
+      <rect width="100" height="25" fill="#ffd62e" /><rect width="100" height="27" fill="#fff" opacity=".18" />
       <rect y="27" width="100" height="1" fill="#b98f00" opacity=".35" />
       <g stroke="#e0d9b8" strokeWidth="1.1"><path d="M0 44H100M0 57H100M0 70H100M0 83H100" /></g>
       <path d="M12 0V100" stroke="#f1b1ab" strokeWidth="0" />
@@ -95,7 +95,7 @@ export const Icon = ({ app }: { app: AppId }) => {
       <circle cx="50" cy="50" r="14" fill={`url(#${id}n)`} stroke="#444851" strokeOpacity=".6" strokeWidth="1" /><circle cx="50" cy="50" r="8.5" fill="#868b95" stroke="#fff" strokeOpacity=".5" strokeWidth=".7" /></Sq>
     case 'photos': return <Sq c1="#ffffff" c2="#eef0f4" dark={.06}>
       {[['#f9a825', 0], ['#ffd400', 45], ['#7ed321', 90], ['#00c7a6', 135], ['#2f8ef7', 180], ['#7b5cf0', 225], ['#d14fd8', 270], ['#ff4a5e', 315]].map(([c, r]) =>
-        <ellipse key={String(r)} cx="50" cy="32" rx="13" ry="19" fill={c as string} opacity=".82" style={{ mixBlendMode: 'multiply' }} transform={`rotate(${r} 50 50)`} />)}</Sq>
+        <ellipse key={String(r)} cx="50" cy="32" rx="14" ry="20" fill={c as string} opacity=".85" style={{ mixBlendMode: 'multiply' }} transform={`rotate(${r} 50 50)`} />)}</Sq>
     case 'music': return <Sq c1="#ff6b7e" c2="#f3112f" dark={.22}>
       <path d="M0 0H100V45Q50 58 0 45Z" fill="#fff" opacity=".08" />
       <path d="M39 70V30l33-8v40" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinejoin="round" />
@@ -111,7 +111,7 @@ export const Icon = ({ app }: { app: AppId }) => {
       <path d="M17 33l33 25 33-25" stroke="#2f8cf0" strokeWidth="3.4" fill="none" strokeLinejoin="round" strokeLinecap="round" />
       <path d="M17 73l23-22M83 73L60 51" stroke="#9ccdf8" strokeWidth="1.6" fill="none" strokeLinecap="round" /></Sq>
     case 'messages': return <Sq c1="#70f28a" c2="#12b432" dark={.2}>
-      <path d="M50 20C30 20 15 32 15 47c0 8 4 15 11 20-1 6-4 11-8 15 8-1 15-4 20-8 4 1 8 2 12 2 20 0 35-12 35-29S70 20 50 20Z" fill="#fff" /></Sq>
+      <path d="M50 17C28 17 11 31 11 48c0 9 5 17 13 22-1 6-4 11-9 15 9-1 17-5 23-9 4 1 8 2 12 2 22 0 39-14 39-30S72 17 50 17Z" fill="#fff" /></Sq>
     case 'maps': return <Sq c1="#c7ecab" c2="#86d072" dark={.12}>
       <path d="M0 62C25 58 50 76 100 54V100H0Z" fill="#8fd0f3" />
       <path d="M-5 30L105 8" stroke="#fff" strokeWidth="9" /><path d="M32 -5L52 105" stroke="#fff" strokeWidth="6" />
