@@ -66,9 +66,9 @@ export const Icon = ({ app }: { app: AppId }) => {
       <path d="M22 61C37 84 65 84 79 61" stroke="#0b1c3a" strokeWidth="3.6" fill="none" strokeLinecap="round" /></Sq>
     case 'safari': return <Sq c1="#7ee2ff" c2="#1673ea" dark={.12}>
       <defs><radialGradient id={id + 'r'} cx=".5" cy=".35" r=".75"><stop offset="0" stopColor="#4cc3ff" /><stop offset="1" stopColor="#0a63e0" /></radialGradient></defs>
-      <circle cx="50" cy="50" r="37" fill="#fff" fillOpacity=".95" /><circle cx="50" cy="50" r="35" fill={`url(#${id}r)`} />
+      <circle cx="50" cy="50" r="38.5" fill="#000" opacity=".12" /><circle cx="50" cy="50" r="37" fill="#fff" fillOpacity=".95" /><circle cx="50" cy="50" r="35" fill={`url(#${id}r)`} />
       {Array.from({ length: 72 }).map((_, i) => <line key={i} x1="50" y1="17.5" x2="50" y2={i % 6 === 0 ? 23 : 20} stroke="#fff" strokeOpacity={i % 6 === 0 ? 1 : .7} strokeWidth={i % 6 === 0 ? 1.3 : .6} transform={`rotate(${i * 5} 50 50)`} />)}
-      <g transform="rotate(45 50 50)"><path d="M50 22L57.5 50H42.5Z" fill="#ff3b30" /><path d="M50 78L42.5 50H57.5Z" fill="#f4f6f9" />
+      <g transform="rotate(45 50 50)"><path d="M50 20L56 50H44Z" fill="#ff3b30" /><path d="M50 80L44 50H56Z" fill="#f4f6f9" />
         <path d="M50 22L50 50H42.5Z" fill="#000" opacity=".12" /><path d="M50 78L50 50H57.5Z" fill="#000" opacity=".1" /></g>
       <circle cx="50" cy="50" r="2.6" fill="#fff" stroke="#0a63e0" strokeOpacity=".4" strokeWidth=".6" /></Sq>
     case 'notes': return <Sq c1="#fffef6" c2="#f6f1d9" dark={.06}>
@@ -78,7 +78,7 @@ export const Icon = ({ app }: { app: AppId }) => {
       <path d="M12 0V100" stroke="#f1b1ab" strokeWidth="0" />
       <g stroke="#9c9577" strokeWidth="2.2" strokeLinecap="round" opacity=".8"><path d="M15 38h42M15 51h58M15 64h34" /></g></Sq>
     case 'calculator': return <Sq c1="#4a4a4e" c2="#1b1b1d" dark={.25}>
-      <rect x="14" y="13" width="72" height="22" rx="4" fill="#111" /><text x="80" y="31" fontSize="17" textAnchor="end" fill="#fff" fontFamily={F} fontWeight="300">0</text>
+      <rect x="14" y="13" width="72" height="22" rx="5" fill="#0d0d0e" /><text x="80" y="31" fontSize="17" textAnchor="end" fill="#fff" fontFamily={F} fontWeight="300">0</text>
       {[0, 1, 2, 3].flatMap(r => [0, 1, 2, 3].map(c => <rect key={r + '-' + c} x={14 + c * 18.5} y={40 + r * 12.8} width="16.5" height="11" rx="5.5" fill={c === 3 ? '#ff9f0a' : r === 0 ? '#a5a5a9' : '#5d5d61'} />))}
       <path d="M14 13h72" stroke="#fff" strokeOpacity=".08" /></Sq>
     case 'terminal': return <Sq c1="#3d3d41" c2="#0a0a0b" dark={.3}>
