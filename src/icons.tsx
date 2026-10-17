@@ -2,94 +2,135 @@ import { useId, type ReactNode } from 'react'
 export type AppId = 'finder'|'safari'|'notes'|'calculator'|'terminal'|'settings'|'photos'|'music'|'trash'|'launchpad'
   | 'calendar'|'mail'|'messages'|'maps'|'appstore'|'reminders'|'weather'
 
-// superellipse (squircle) path, n=5
-const SQ = (() => {
-  const n = 5, pts: string[] = []
-  for (let i = 0; i < 120; i++) {
-    const t = (i / 120) * Math.PI * 2, c = Math.cos(t), s = Math.sin(t)
-    const x = 50 + 46 * Math.sign(c) * Math.pow(Math.abs(c), 2 / n), y = 50 + 46 * Math.sign(s) * Math.pow(Math.abs(s), 2 / n)
+// continuous-corner squircle (superellipse, n=5 approximates Apple's smooth corners)
+const sqPath = (r: number, n = 5, cx = 50, cy = 50) => {
+  const pts: string[] = []
+  for (let i = 0; i < 160; i++) {
+    const t = (i / 160) * Math.PI * 2, c = Math.cos(t), s = Math.sin(t)
+    const x = cx + r * Math.sign(c) * Math.pow(Math.abs(c), 2 / n), y = cy + r * Math.sign(s) * Math.pow(Math.abs(s), 2 / n)
     pts.push(`${i ? 'L' : 'M'}${x.toFixed(2)} ${y.toFixed(2)}`)
   }
   return pts.join('') + 'Z'
-})()
+}
+const SQ = sqPath(46)
+const SQ_IN = sqPath(45.2)
 
-export const Sq = ({ c1, c2, children, gloss = true }: { c1: string; c2: string; children?: ReactNode; gloss?: boolean }) => {
+export const Sq = ({ c1, c2, children, gloss = false, dark = .16 }: { c1: string; c2: string; children?: ReactNode; gloss?: boolean; dark?: number }) => {
   const id = useId().replace(/:/g, '')
   return <svg viewBox="0 0 100 100" width="100%" height="100%" style={{ overflow: 'visible' }}>
     <defs>
       <linearGradient id={id + 'f'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={c1} /><stop offset="1" stopColor={c2} /></linearGradient>
-      <linearGradient id={id + 'g'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".42" /><stop offset=".55" stopColor="#fff" stopOpacity="0" /></linearGradient>
+      <linearGradient id={id + 'b'} x1="0" y1="0" x2="0" y2="1"><stop offset=".62" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity={dark} /></linearGradient>
+      <linearGradient id={id + 'g'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".28" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+      <linearGradient id={id + 'h'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".75" /><stop offset=".35" stopColor="#fff" stopOpacity=".08" /><stop offset=".7" stopColor="#fff" stopOpacity="0" /><stop offset="1" stopColor="#fff" stopOpacity=".12" /></linearGradient>
       <clipPath id={id + 'c'}><path d={SQ} /></clipPath>
+      <filter id={id + 's'} x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.2" floodColor="#000" floodOpacity=".32" /></filter>
     </defs>
+    <path d={SQ} fill="#000" filter={`url(#${id}s)`} />
     <path d={SQ} fill={`url(#${id}f)`} />
-    <g clipPath={`url(#${id}c)`}>{children}{gloss && <rect x="0" y="0" width="100" height="55" fill={`url(#${id}g)`} />}</g>
-    <path d={SQ} fill="none" stroke="#000" strokeOpacity=".18" strokeWidth=".8" />
-    <path d={SQ} fill="none" stroke="#fff" strokeOpacity=".45" strokeWidth=".8" transform="translate(50 50) scale(.985) translate(-50 -50)" />
+    <g clipPath={`url(#${id}c)`}>{children}
+      {gloss && <path d="M0 0H100V38Q50 50 0 38Z" fill={`url(#${id}g)`} />}
+      <rect width="100" height="100" fill={`url(#${id}b)`} /></g>
+    <path d={SQ_IN} fill="none" stroke={`url(#${id}h)`} strokeWidth="1.1" />
+    <path d={SQ} fill="none" stroke="#000" strokeOpacity=".22" strokeWidth=".7" />
   </svg>
 }
 
 const gear = (() => {
-  const p: string[] = []; const N = 8
-  for (let i = 0; i < N; i++) { const a = (i / N) * 2 * Math.PI; const f = (r: number, d: number) => `${(50 + r * Math.cos(a + d)).toFixed(1)} ${(50 + r * Math.sin(a + d)).toFixed(1)}`
-    const w = Math.PI / N
-    p.push(`${i ? 'L' : 'M'}${f(26, -w * .55)}L${f(33, -w * .38)}L${f(33, w * .38)}L${f(26, w * .55)}`) }
+  // 12-tooth gear with rounded trapezoid teeth
+  const N = 12, p: string[] = []
+  const pt = (r: number, a: number) => `${(50 + r * Math.cos(a)).toFixed(2)} ${(50 + r * Math.sin(a)).toFixed(2)}`
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * 2 * Math.PI - Math.PI / 2, w = Math.PI / N
+    p.push(`${i ? 'L' : 'M'}${pt(29, a - w * .95)}L${pt(37, a - w * .5)}L${pt(37, a + w * .5)}L${pt(29, a + w * .95)}`)
+  }
   return p.join('') + 'Z'
 })()
 
+const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT']
+const F = '-apple-system,"SF Pro Display",Helvetica,Arial,sans-serif'
+
 export const Icon = ({ app }: { app: AppId }) => {
+  const id = useId().replace(/:/g, '')
   switch (app) {
-    case 'finder': return <Sq c1="#7fd4ff" c2="#2f8cf0" gloss={false}>
-      <rect x="50" y="0" width="50" height="100" fill="#2a74ea" />
-      <path d="M50 0h50v100H50z" fill="#e9f3ff" opacity=".0" />
-      <rect x="0" y="0" width="100" height="100" fill="#fff" opacity=".08" />
-      <path d="M50 4v40" stroke="#bfe3ff" strokeWidth="1.5" opacity=".0" />
-      <path d="M0 0h50v100H0z" fill="#8fdcff" opacity=".45" />
-      <g stroke="#0b1d3a" strokeWidth="4.2" strokeLinecap="round" fill="none"><path d="M33 31v11M67 31v11" /><path d="M50 38c-1 8 0 14 4 19" strokeWidth="3" opacity=".9" /><path d="M27 63c14 14 32 14 46 0" /></g>
-      <path d="M50 4C52 40 52 60 50 96" stroke="#fff" strokeOpacity=".5" strokeWidth="1.2" fill="none" />
-      <rect x="0" y="0" width="100" height="52" fill="#fff" opacity=".16" /></Sq>
-    case 'safari': return <Sq c1="#6fdcff" c2="#0c6be0">
-      <circle cx="50" cy="50" r="38" fill="#fff" /><circle cx="50" cy="50" r="35" fill="#1b8cf5" />
-      <circle cx="50" cy="50" r="35" fill="none" stroke="#bfe6ff" strokeWidth="1" opacity=".8" />
-      {Array.from({ length: 60 }).map((_, i) => <line key={i} x1="50" y1="17" x2="50" y2={i % 5 === 0 ? 22.5 : 19.5} stroke="#fff" strokeWidth={i % 5 === 0 ? 1.4 : .7} transform={`rotate(${i * 6} 50 50)`} />)}
-      <path d="M50 50L66.5 30.5 L56.5 56Z" fill="#ff453a" transform="rotate(10 50 50)" /><path d="M50 50L33.5 69.5 L43.5 44Z" fill="#f2f6fb" transform="rotate(10 50 50)" />
-      <circle cx="50" cy="50" r="2.4" fill="#fff" /></Sq>
-    case 'notes': return <Sq c1="#fffdf2" c2="#f4efd5" gloss={false}>
-      <rect x="0" y="0" width="100" height="30" fill="#ffd324" /><rect x="0" y="0" width="100" height="30" fill="#fff" opacity=".2" />
-      <rect x="0" y="29" width="100" height="1" fill="#c9a000" opacity=".4" />
-      <g stroke="#cfcab0" strokeWidth="1.3"><path d="M14 46h72M14 59h72M14 72h72M14 85h50" /></g>
-      <g stroke="#333" strokeWidth="2.4" strokeLinecap="round"><path d="M16 14h38" opacity=".0" /></g></Sq>
-    case 'calculator': return <Sq c1="#5c5c60" c2="#1f1f22">
-      <rect x="15" y="13" width="70" height="22" rx="3" fill="#2a2a2d" /><text x="80" y="31" fontSize="17" textAnchor="end" fill="#fff" fontFamily="-apple-system,sans-serif" fontWeight="300">0</text>
-      {[0, 1, 2, 3].flatMap(r => [0, 1, 2, 3].map(c => <rect key={r + '-' + c} x={15 + c * 17.7} y={40 + r * 12.6} width="16" height="11" rx="2.5" fill={c === 3 ? '#ff9f0a' : r === 0 ? '#9a9a9f' : '#7a7a7f'} />))}</Sq>
-    case 'terminal': return <Sq c1="#4a4a4e" c2="#0b0b0c">
-      <rect x="9" y="12" width="82" height="76" rx="9" fill="#0b0b0c" stroke="#8e8e93" strokeWidth="1.2" />
-      <rect x="9" y="12" width="82" height="11" rx="5" fill="#2f2f33" />
-      <path d="M22 41l13 9-13 9" stroke="#fff" strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d="M42 62h22" stroke="#fff" strokeWidth="5" strokeLinecap="round" /></Sq>
-    case 'settings': return <Sq c1="#c9ccd3" c2="#80848d">
-      <path d={gear} fill="#5c606a" stroke="#fff" strokeOpacity=".4" strokeWidth=".8" /><circle cx="50" cy="50" r="26" fill="#a9adb6" /><circle cx="50" cy="50" r="22" fill="#7d818b" />
-      <circle cx="50" cy="50" r="22" fill="none" stroke="#fff" strokeOpacity=".5" /><circle cx="50" cy="50" r="10" fill="#d5d8de" stroke="#5c606a" strokeWidth="1.5" /></Sq>
-    case 'photos': return <Sq c1="#ffffff" c2="#eceef2" gloss={false}>
-      {[['#ff9500', 0], ['#ffcc00', 45], ['#7ed957', 90], ['#00c7be', 135], ['#0a84ff', 180], ['#5e5ce6', 225], ['#bf5af2', 270], ['#ff375f', 315]].map(([c, r]) =>
-        <ellipse key={String(r)} cx="50" cy="31" rx="12.5" ry="20" fill={c as string} opacity=".85" style={{ mixBlendMode: 'multiply' }} transform={`rotate(${r} 50 50)`} />)}</Sq>
-    case 'music': return <Sq c1="#ff7a8a" c2="#f4203a">
-      <path d="M40 67V31l30-7v36" stroke="#fff" strokeWidth="5" fill="none" strokeLinejoin="round" /><ellipse cx="33" cy="69" rx="9.5" ry="7.5" fill="#fff" /><ellipse cx="63" cy="62" rx="9.5" ry="7.5" fill="#fff" /></Sq>
-    case 'launchpad': return <Sq c1="#e8ebf1" c2="#9aa3b4">
-      {[0, 1, 2].flatMap(r => [0, 1, 2].map(c => <rect key={r + '-' + c} x={20 + c * 21} y={20 + r * 21} width="17" height="17" rx="4.5" fill={['#ff453a', '#ff9f0a', '#ffd60a', '#30d158', '#64d2ff', '#0a84ff', '#bf5af2', '#ff375f', '#8e8e93'][r * 3 + c]} />))}</Sq>
-    case 'calendar': return <Sq c1="#fff" c2="#f1f1f4" gloss={false}>
-      <text x="50" y="26" fontSize="13" textAnchor="middle" fill="#ff3b30" fontWeight="600" fontFamily="-apple-system,sans-serif">{['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()]}</text>
-      <text x="50" y="76" fontSize="48" textAnchor="middle" fill="#1d1d1f" fontWeight="300" fontFamily="-apple-system,sans-serif">{new Date().getDate()}</text></Sq>
-    case 'mail': return <Sq c1="#62c6ff" c2="#1d6fe8"><rect x="17" y="27" width="66" height="46" rx="6" fill="#fff" /><path d="M19 31l31 24 31-24" stroke="#4aa3f5" strokeWidth="3.5" fill="none" strokeLinejoin="round" /></Sq>
-    case 'messages': return <Sq c1="#6ff08a" c2="#16b83a"><ellipse cx="50" cy="46" rx="33" ry="26" fill="#fff" /><path d="M30 64q-2 10-10 14 12 1 22-7z" fill="#fff" /></Sq>
-    case 'maps': return <Sq c1="#bde8a0" c2="#7ccb6a"><path d="M0 70L100 30v70H0z" fill="#9ed4f0" opacity=".9" /><path d="M-5 60L105 20" stroke="#fff" strokeWidth="9" /><path d="M40 -5l25 105" stroke="#ffd25a" strokeWidth="7" /><circle cx="52" cy="44" r="12" fill="#ff453a" stroke="#fff" strokeWidth="3" /></Sq>
-    case 'appstore': return <Sq c1="#5fd3ff" c2="#1a73f0"><g stroke="#fff" strokeWidth="6" strokeLinecap="round"><path d="M50 24L32 70M50 24l18 46M26 58h48" /></g></Sq>
-    case 'reminders': return <Sq c1="#fff" c2="#f2f2f5" gloss={false}>{[0, 1, 2].map(i => <g key={i}><circle cx="26" cy={30 + i * 20} r="5.5" fill="none" stroke={['#ff453a', '#ff9f0a', '#0a84ff'][i]} strokeWidth="2.2" /><path d={`M40 ${30 + i * 20}h40`} stroke="#d6d6da" strokeWidth="2" /></g>)}</Sq>
-    case 'weather': return <Sq c1="#4aa8ff" c2="#1f5fd0"><circle cx="38" cy="38" r="15" fill="#ffd60a" /><g fill="#fff"><ellipse cx="55" cy="65" rx="22" ry="12" /><circle cx="44" cy="58" r="12" /><circle cx="63" cy="56" r="10" /></g></Sq>
-    case 'trash': return <svg viewBox="0 0 100 100" width="100%" height="100%"><defs><linearGradient id="tr1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#dfe3ea" /><stop offset=".5" stopColor="#f6f8fb" /><stop offset="1" stopColor="#c4cad4" /></linearGradient>
-      <linearGradient id="tr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".55" /><stop offset="1" stopColor="#9aa3b2" stopOpacity=".55" /></linearGradient></defs>
-      <path d="M24 22h52l-4.5 68a7 7 0 0 1-7 6.5H35.500a7 7 0 0 1-7-6.5z" fill="url(#tr2)" stroke="#fff" strokeOpacity=".8" strokeWidth="1.2" />
-      <path d="M24 22h52l-4.5 68a7 7 0 0 1-7 6.5H35.500a7 7 0 0 1-7-6.500z" fill="none" stroke="#6c7482" strokeOpacity=".35" />
-      <g stroke="#8a93a3" strokeOpacity=".7" strokeWidth="1.4">{[0,1,2,3,4].map(i => <path key={i} d={`M${33 + i * 8.5} 30L${34 + i * 8} 88`} />)}{[0,1,2,3,4,5].map(i => <path key={'h'+i} d={`M30 ${38 + i * 9}H70`} />)}</g>
-      <rect x="18" y="12" width="64" height="10" rx="5" fill="url(#tr1)" stroke="#8a93a3" strokeOpacity=".5" /></svg>
+    case 'finder': return <Sq c1="#74d3ff" c2="#2f8cf2" dark={.1}>
+      <defs>
+        <linearGradient id={id + 'L'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a6e6ff" /><stop offset="1" stopColor="#4fb4fb" /></linearGradient>
+        <linearGradient id={id + 'R'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2f9bfb" /><stop offset="1" stopColor="#1255d6" /></linearGradient>
+      </defs>
+      <rect width="100" height="100" fill={`url(#${id}L)`} />
+      <path d="M53 0H100V100H47C55 80 56 62 52 46C50 34 51 14 53 0Z" fill={`url(#${id}R)`} />
+      <path d="M53 0C51 14 50 34 52 46C56 62 55 80 47 100" fill="none" stroke="#fff" strokeOpacity=".55" strokeWidth="1.3" />
+      <g fill="#0b1c3a"><ellipse cx="34" cy="38" rx="3.2" ry="6.8" /><ellipse cx="66" cy="38" rx="3.2" ry="6.8" /></g>
+      <path d="M52 40C51 50 52 56 56 60" stroke="#0b1c3a" strokeWidth="2.6" fill="none" strokeLinecap="round" />
+      <path d="M24 62C38 82 64 82 77 62" stroke="#0b1c3a" strokeWidth="3.6" fill="none" strokeLinecap="round" /></Sq>
+    case 'safari': return <Sq c1="#7ee2ff" c2="#1673ea" dark={.12}>
+      <defs><radialGradient id={id + 'r'} cx=".5" cy=".35" r=".75"><stop offset="0" stopColor="#4cc3ff" /><stop offset="1" stopColor="#0a63e0" /></radialGradient></defs>
+      <circle cx="50" cy="50" r="37" fill="#fff" fillOpacity=".95" /><circle cx="50" cy="50" r="35" fill={`url(#${id}r)`} />
+      {Array.from({ length: 72 }).map((_, i) => <line key={i} x1="50" y1="17.5" x2="50" y2={i % 6 === 0 ? 23 : 20} stroke="#fff" strokeOpacity={i % 6 === 0 ? 1 : .7} strokeWidth={i % 6 === 0 ? 1.3 : .6} transform={`rotate(${i * 5} 50 50)`} />)}
+      <g transform="rotate(45 50 50)"><path d="M50 22L57.5 50H42.5Z" fill="#ff3b30" /><path d="M50 78L42.5 50H57.5Z" fill="#f4f6f9" />
+        <path d="M50 22L50 50H42.5Z" fill="#000" opacity=".12" /><path d="M50 78L50 50H57.5Z" fill="#000" opacity=".1" /></g>
+      <circle cx="50" cy="50" r="2.6" fill="#fff" stroke="#0a63e0" strokeOpacity=".4" strokeWidth=".6" /></Sq>
+    case 'notes': return <Sq c1="#fffef6" c2="#f6f1d9" dark={.06}>
+      <rect width="100" height="27" fill="#ffd62e" /><rect width="100" height="27" fill="#fff" opacity=".18" />
+      <rect y="27" width="100" height="1" fill="#b98f00" opacity=".35" />
+      <g stroke="#e0d9b8" strokeWidth="1.1"><path d="M0 44H100M0 57H100M0 70H100M0 83H100" /></g>
+      <path d="M12 0V100" stroke="#f1b1ab" strokeWidth="0" />
+      <g stroke="#9c9577" strokeWidth="2.2" strokeLinecap="round" opacity=".8"><path d="M15 38h42M15 51h58M15 64h34" /></g></Sq>
+    case 'calculator': return <Sq c1="#4a4a4e" c2="#1b1b1d" dark={.25}>
+      <rect x="14" y="13" width="72" height="22" rx="4" fill="#111" /><text x="80" y="31" fontSize="17" textAnchor="end" fill="#fff" fontFamily={F} fontWeight="300">0</text>
+      {[0, 1, 2, 3].flatMap(r => [0, 1, 2, 3].map(c => <rect key={r + '-' + c} x={14 + c * 18.5} y={40 + r * 12.8} width="16.5" height="11" rx="5.5" fill={c === 3 ? '#ff9f0a' : r === 0 ? '#a5a5a9' : '#5d5d61'} />))}
+      <path d="M14 13h72" stroke="#fff" strokeOpacity=".08" /></Sq>
+    case 'terminal': return <Sq c1="#3d3d41" c2="#0a0a0b" dark={.3}>
+      <rect x="8" y="12" width="84" height="76" rx="10" fill="#101012" stroke="#a5a5aa" strokeOpacity=".7" strokeWidth="1.4" />
+      <path d="M8 22a10 10 0 0 1 10-10h64a10 10 0 0 1 10 10v1H8z" fill="#3a3a3f" />
+      <path d="M22 41l14 10-14 10" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /><path d="M43 64h24" stroke="#fff" strokeWidth="5.5" strokeLinecap="round" /></Sq>
+    case 'settings': return <Sq c1="#d8dbe1" c2="#8b909a" dark={.18}>
+      <defs>
+        <linearGradient id={id + 'm'} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fafbfc" /><stop offset=".5" stopColor="#b3b8c2" /><stop offset="1" stopColor="#6f7580" /></linearGradient>
+        <linearGradient id={id + 'n'} x1="1" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#e9ebef" /><stop offset="1" stopColor="#6a6f7a" /></linearGradient>
+      </defs>
+      <path d={gear} fill={`url(#${id}m)`} stroke="#3c404a" strokeOpacity=".5" strokeWidth=".7" strokeLinejoin="round" />
+      <circle cx="50" cy="50" r="30" fill={`url(#${id}m)`} /><circle cx="50" cy="50" r="30" fill="none" stroke="#fff" strokeOpacity=".6" strokeWidth=".8" />
+      <circle cx="50" cy="50" r="14" fill={`url(#${id}n)`} stroke="#444851" strokeOpacity=".6" strokeWidth="1" /><circle cx="50" cy="50" r="8.5" fill="#868b95" stroke="#fff" strokeOpacity=".5" strokeWidth=".7" /></Sq>
+    case 'photos': return <Sq c1="#ffffff" c2="#eef0f4" dark={.06}>
+      {[['#f9a825', 0], ['#ffd400', 45], ['#7ed321', 90], ['#00c7a6', 135], ['#2f8ef7', 180], ['#7b5cf0', 225], ['#d14fd8', 270], ['#ff4a5e', 315]].map(([c, r]) =>
+        <ellipse key={String(r)} cx="50" cy="32" rx="13" ry="19" fill={c as string} opacity=".82" style={{ mixBlendMode: 'multiply' }} transform={`rotate(${r} 50 50)`} />)}</Sq>
+    case 'music': return <Sq c1="#ff6b7e" c2="#f3112f" dark={.22}>
+      <path d="M0 0H100V45Q50 58 0 45Z" fill="#fff" opacity=".08" />
+      <path d="M39 70V30l33-8v40" stroke="#fff" strokeWidth="5.5" fill="none" strokeLinejoin="round" />
+      <path d="M39 30l33-8v11l-33 8z" fill="#fff" />
+      <ellipse cx="31" cy="71" rx="10" ry="8" fill="#fff" transform="rotate(-18 31 71)" /><ellipse cx="64" cy="63" rx="10" ry="8" fill="#fff" transform="rotate(-18 64 63)" /></Sq>
+    case 'launchpad': return <Sq c1="#eef0f4" c2="#a2aabb" dark={.18}>
+      {[0, 1, 2].flatMap(r => [0, 1, 2].map(c => <rect key={r + '-' + c} x={19 + c * 22} y={19 + r * 22} width="18" height="18" rx="5" fill={['#ff453a', '#ff9f0a', '#ffd60a', '#30d158', '#64d2ff', '#0a84ff', '#bf5af2', '#ff375f', '#8e8e93'][r * 3 + c]} />))}</Sq>
+    case 'calendar': return <Sq c1="#ffffff" c2="#f4f4f6" dark={.05}>
+      <text x="50" y="25" fontSize="12.5" textAnchor="middle" fill="#ff3b30" fontWeight="600" fontFamily={F} letterSpacing=".6">{DAYS[new Date().getDay()]}</text>
+      <text x="50" y="78" fontSize="52" textAnchor="middle" fill="#1d1d1f" fontWeight="400" fontFamily={F}>{new Date().getDate()}</text></Sq>
+    case 'mail': return <Sq c1="#6ccbff" c2="#1769e6" dark={.2}>
+      <rect x="16" y="27" width="68" height="47" rx="7" fill="#fff" />
+      <path d="M17 33l33 25 33-25" stroke="#2f8cf0" strokeWidth="3.4" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+      <path d="M17 73l23-22M83 73L60 51" stroke="#9ccdf8" strokeWidth="1.6" fill="none" strokeLinecap="round" /></Sq>
+    case 'messages': return <Sq c1="#70f28a" c2="#12b432" dark={.2}>
+      <path d="M50 20C30 20 15 32 15 47c0 8 4 15 11 20-1 6-4 11-8 15 8-1 15-4 20-8 4 1 8 2 12 2 20 0 35-12 35-29S70 20 50 20Z" fill="#fff" /></Sq>
+    case 'maps': return <Sq c1="#c7ecab" c2="#86d072" dark={.12}>
+      <path d="M0 62C25 58 50 76 100 54V100H0Z" fill="#8fd0f3" />
+      <path d="M-5 30L105 8" stroke="#fff" strokeWidth="9" /><path d="M32 -5L52 105" stroke="#fff" strokeWidth="6" />
+      <path d="M-5 74L105 40" stroke="#ffd45c" strokeWidth="7" /><path d="M70 -5L80 105" stroke="#fff" strokeWidth="3.5" />
+      <path d="M50 18c-9 0-15 6-15 14 0 10 15 26 15 26s15-16 15-26c0-8-6-14-15-14Z" fill="#ff453a" /><circle cx="50" cy="32" r="5.5" fill="#fff" /></Sq>
+    case 'appstore': return <Sq c1="#55d6ff" c2="#1769f0" dark={.2}>
+      <g stroke="#fff" strokeWidth="6.5" strokeLinecap="round"><path d="M50 21L31 71M50 21l19 50M24 57h52" transform="translate(0 0)" /></g>
+      <path d="M31 71l-6 9M69 71l6 9" stroke="#fff" strokeWidth="6.5" strokeLinecap="round" opacity="0" /></Sq>
+    case 'reminders': return <Sq c1="#ffffff" c2="#f3f3f6" dark={.05}>{[0, 1, 2].map(i => <g key={i}><circle cx="26" cy={30 + i * 21} r="6" fill="none" stroke={['#ff453a', '#ff9f0a', '#0a84ff'][i]} strokeWidth="2.2" /><path d={`M40 ${30 + i * 21}h40`} stroke="#d9d9dd" strokeWidth="2" strokeLinecap="round" />{i < 3 && i > 0 && <path d={`M14 ${19.5 + i * 21}h74`} stroke="#e6e6ea" strokeWidth=".8" />}</g>)}</Sq>
+    case 'weather': return <Sq c1="#4fb0ff" c2="#1d5fd2" dark={.2}><circle cx="38" cy="38" r="15" fill="#ffd60a" /><g fill="#fff"><ellipse cx="55" cy="65" rx="22" ry="12" /><circle cx="44" cy="58" r="12" /><circle cx="63" cy="56" r="10" /></g></Sq>
+    case 'trash': return <svg viewBox="0 0 100 100" width="100%" height="100%" style={{ overflow: 'visible' }}><defs>
+      <linearGradient id={id + 'a'} x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#b9c0cc" /><stop offset=".3" stopColor="#f4f6fa" /><stop offset=".7" stopColor="#dfe3ea" /><stop offset="1" stopColor="#aeb5c1" /></linearGradient>
+      <linearGradient id={id + 'b'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".7" /><stop offset="1" stopColor="#a4acba" stopOpacity=".6" /></linearGradient>
+      <filter id={id + 's'} x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity=".3" /></filter></defs>
+      <g filter={`url(#${id}s)`}>
+      <path d="M23 24h54l-4.5 66a7 7 0 0 1-7 6.500H34.500a7 7 0 0 1-7-6.500z" fill={`url(#${id}b)`} stroke="#fff" strokeOpacity=".85" strokeWidth="1.2" />
+      <path d="M23 24h54l-4.500 66a7 7 0 0 1-7 6.500H34.500a7 7 0 0 1-7-6.500z" fill="none" stroke="#5f6877" strokeOpacity=".4" /></g>
+      <g stroke="#7d8696" strokeOpacity=".65" strokeWidth="1.3">{[0,1,2,3,4].map(i => <path key={i} d={`M${33 + i * 8.5} 31L${34 + i * 8} 88`} />)}{[0,1,2,3,4,5].map(i => <path key={'h'+i} d={`M29 ${38 + i * 9}H71`} />)}</g>
+      <rect x="17" y="13" width="66" height="11" rx="5.500" fill={`url(#${id}a)`} stroke="#6f7888" strokeOpacity=".55" /></svg>
   }
 }
 export const FOLDER_BLUE = ['#7ccbff', '#3d9cf5', '#5db6fa']
