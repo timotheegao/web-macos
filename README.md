@@ -1,8 +1,8 @@
 # web-macOS (Tahoe) · 网页版 macOS
 
-> ⚠️ **Unofficial fan project. Not affiliated with, endorsed by, or sponsored by Apple Inc.** All icons are hand-drawn inline SVG; no Apple assets are used. "macOS", "Tahoe", "Finder", "Safari" etc. are trademarks of Apple Inc.
+> ⚠️ **Unofficial fan project. Not affiliated with, endorsed by, or sponsored by Apple Inc.** App icons are GPL-3.0 SVGs from vinceliuice's MacTahoe/WhiteSur icon themes (Weather is hand-drawn); no Apple assets are used. "macOS", "Tahoe", "Finder", "Safari" etc. are trademarks of Apple Inc.
 >
-> ⚠️ **非官方粉丝项目，与 Apple Inc. 无任何关联。** 所有图标均为手绘内联 SVG，未使用任何 Apple 资源。
+> ⚠️ **非官方粉丝项目，与 Apple Inc. 无任何关联。** 应用图标来自 vinceliuice 的 MacTahoe / WhiteSur 图标主题（GPL-3.0；天气为手绘），未使用任何 Apple 资源。
 
 ## English
 
@@ -51,5 +51,14 @@ npm run build
 
 **部署：** 推送到 `main` 后由 GitHub Actions 自动构建并发布到 GitHub Pages（需在仓库 Settings → Pages 中选择 GitHub Actions）。
 
-## License
-MIT — see [LICENSE](LICENSE).
+## Credits and License
+
+- This project is licensed under **GPL-3.0** (see `LICENSE`).
+- `public/icons-gpl/` contains SVG icons from [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme) and [WhiteSur-icon-theme](https://github.com/vinceliuice/WhiteSur-icon-theme) by Vince Liuice, **GPL-3.0** (see `public/icons-gpl/COPYING` and `README_ICONS.md`).
+- Unofficial, non-commercial fan project; not affiliated with, endorsed by, or sponsored by Apple Inc. Apple, macOS, Finder, Safari etc. are trademarks of Apple Inc.
+
+## 致谢与许可
+
+- 本项目采用 **GPL-3.0** 许可证（见 `LICENSE`）。
+- `public/icons-gpl/` 目录中的 SVG 图标来自 vinceliuice 的 [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme) 与 [WhiteSur-icon-theme](https://github.com/vinceliuice/WhiteSur-icon-theme)，许可证为 **GPL-3.0**（见 `public/icons-gpl/COPYING` 与 `README_ICONS.md`）。
+- 非官方、非商业的粉丝项目，与 Apple Inc. 无关联，未获其认可或赞助。Apple、macOS、Finder、Safari 等为 Apple Inc. 的商标。

@@ -197,7 +197,7 @@ function Dock({ wins, bouncing, open, trashFull }: { wins: Win[]; bouncing: AppI
         {id === 'trash' && <div className="dsep" />}
         <div className={'dk' + (bouncing === id ? ' bounce' : '')} data-dock={id} style={{ width: s, height: s }} onClick={() => open(id)} onMouseDown={e => e.stopPropagation()}>
           <span className="tip">{label(id)}</span>
-          <div className="dki" style={{ opacity: id === 'trash' && !trashFull ? 0.92 : 1 }}><Icon app={id} /></div>
+          <div className="dki" style={{ opacity: 1 }}><Icon app={id} full={trashFull} /></div>
           {run && <i className="dot" />}
         </div></div>
     })}</div></div>

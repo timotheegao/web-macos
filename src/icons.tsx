@@ -50,7 +50,7 @@ const gear = (() => {
 const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT']
 const F = '-apple-system,"SF Pro Display",Helvetica,Arial,sans-serif'
 
-export const Icon = ({ app }: { app: AppId }) => {
+const HandIcon = ({ app }: { app: AppId }) => {
   const id = useId().replace(/:/g, '')
   switch (app) {
     case 'finder': return <Sq c1="#74d3ff" c2="#2f8cf2" dark={.1}>
@@ -183,4 +183,23 @@ export const Glyph = {
   fwd: (s = 16) => <svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor"><path d="M4 5v14l10-7zM18 5v14h3V5z" /></svg>,
   battery: (pct = 82) => <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="22" height="12" rx="3.500" fill="none" stroke="currentColor" opacity=".45" /><rect x="2" y="2" width={(19 * pct) / 100} height="9" rx="2" fill="currentColor" /><path d="M24.500 4.500v4" stroke="currentColor" opacity=".5" strokeWidth="1.600" strokeLinecap="round" /></svg>,
   control: () => <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" strokeWidth="1.300"><rect x="1" y=".8" width="14" height="5.200" rx="2.600" /><circle cx="4.200" cy="3.400" r="1.500" fill="currentColor" stroke="none" /><rect x="1" y="8" width="14" height="5.200" rx="2.600" /><circle cx="11.800" cy="10.600" r="1.500" fill="currentColor" stroke="none" /></svg>,
+}
+
+const SVG_ICONS: Partial<Record<AppId, string>> = {
+  finder: 'finder', safari: 'safari', mail: 'mail', messages: 'messages', maps: 'maps', photos: 'photos', calendar: 'calendar',
+  music: 'music', notes: 'notes', reminders: 'reminders', settings: 'settings', calculator: 'calculator', terminal: 'terminal',
+  appstore: 'appstore', launchpad: 'launchpad', trash: 'trash',
+}
+// GPL-3.0 icons from vinceliuice's MacTahoe / WhiteSur themes (public/icons-gpl); hand-drawn fallback for the rest
+export const Icon = ({ app, full = false }: { app: AppId; full?: boolean }) => {
+  const f = SVG_ICONS[app]
+  if (!f) return <HandIcon app={app} />
+  const src = `${import.meta.env.BASE_URL}icons-gpl/${app === 'trash' && full ? 'trash-full' : f}.svg`
+  const img = <img src={src} alt="" draggable={false} style={{ width: '100%', height: '100%', display: 'block' }} />
+  if (app !== 'calendar') return img
+  const d = new Date()
+  return <div style={{ position: 'relative', width: '100%', height: '100%' }}>{img}
+    <svg viewBox="0 0 64 64" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+      <text x="32" y="21.5" fontSize="8.2" textAnchor="middle" fill="#fe5c54" fontWeight="600" fontFamily={F} letterSpacing=".4">{DAYS[d.getDay()]}</text>
+      <text x="32" y="47.5" fontSize="27" textAnchor="middle" fill="#2b2b2d" fontWeight="300" fontFamily={F}>{d.getDate()}</text></svg></div>
 }
