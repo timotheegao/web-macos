@@ -15,7 +15,7 @@ Both are licensed under **GNU GPL v3** (see `COPYING`; upstream author files: `A
 | messages.svg | MacTahoe `apps/empathy.svg` |
 | maps.svg | MacTahoe `apps/gnome-maps.svg` |
 | photos.svg | MacTahoe `apps/shotwell.svg` |
-| calendar.svg | MacTahoe `apps/calendar.svg` (date text removed) |
+| calendar.svg | MacTahoe `apps/calendar.svg` (date text and its shadow removed) |
 | music.svg | MacTahoe `apps/gnome-music.svg` |
 | notes.svg | MacTahoe `apps/sticky.svg` |
 | reminders.svg | MacTahoe `apps/gnome-todo.svg` |
